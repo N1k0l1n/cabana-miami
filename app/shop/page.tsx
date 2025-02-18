@@ -47,7 +47,7 @@ export default function Shop() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("/products.json")
+        const response = await fetch("/products1.json")
         if (!response.ok) {
           throw new Error("Failed to fetch products")
         }
