@@ -1,3 +1,4 @@
+// app/shop/page.tsx
 "use client"
 
 import { useState, useEffect } from "react"
@@ -9,6 +10,7 @@ import { AnimatedAddToCartButton } from "@/components/animated-add-to-cart-butto
 import { CartIcon } from "@/components/cart-icon"
 import { QuickCheckoutPopup } from "@/components/quick-checkout-popup"
 import { useCart } from "../contexts/CartContext"
+import Link from 'next/link'; 
 
 interface Product {
   id: string
@@ -136,7 +138,7 @@ export default function Shop() {
   }
 
   return (
-    <div className="bg-ocean-light min-h-screen">
+    <div className=" min-h-screen">
       <LuxuryHeader />
       <main style={{ paddingTop: `${menuHeight}px` }} className="pb-16">
         <div className="container mx-auto px-4">
@@ -150,6 +152,7 @@ export default function Shop() {
 
           {/* Filters and Search */}
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
+            {/* Search Bar */}
             <div className="relative w-full md:w-64">
               <input
                 type="text"
@@ -164,12 +167,14 @@ export default function Shop() {
               />
             </div>
 
-            <div className="flex items-center gap-4">
-              <div className="relative">
+            {/* Filters (Category and Sorting) */}
+            <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+              {/* Category Filter */}
+              <div className="relative w-full md:w-64">
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="appearance-none bg-white border border-luxury-300 text-luxury-700 py-2 pl-4 pr-8 rounded-full focus:outline-none focus:ring-2 focus:ring-gold"
+                  className="appearance-none bg-white border border-luxury-300 text-luxury-700 py-2 pl-4 pr-8 rounded-full focus:outline-none focus:ring-2 focus:ring-gold w-full"
                 >
                   {categories.map((category) => (
                     <option key={category} value={category}>
@@ -183,11 +188,12 @@ export default function Shop() {
                 />
               </div>
 
-              <div className="relative">
+              {/* Sort By Filter */}
+              <div className="relative w-full md:w-64">
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="appearance-none bg-white border border-luxury-300 text-luxury-700 py-2 pl-4 pr-8 rounded-full focus:outline-none focus:ring-2 focus:ring-gold"
+                  className="appearance-none bg-white border border-luxury-300 text-luxury-700 py-2 pl-4 pr-8 rounded-full focus:outline-none focus:ring-2 focus:ring-gold w-full"
                 >
                   <option value="featured">Featured</option>
                   <option value="priceLowHigh">Price: Low to High</option>
@@ -217,71 +223,73 @@ export default function Shop() {
                     transition={{ duration: 0.5 }}
                     className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow"
                   >
-                    <div className="relative h-64">
-                      <Image
-                        src={product.images[0] || "/placeholder.svg"}
-                        alt={product.name}
-                        width={500}
-                        height={500}
-                        className="object-cover w-full h-full"
-                      />
-                      {addedToCart === product.id && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -20 }}
-                          className="absolute top-4 right-4 bg-gold text-white px-4 py-2 rounded-full"
-                        >
-                          Added to Cart!
-                        </motion.div>
-                      )}
-                    </div>
-                    <div className="p-6">
-                      <h2 className="font-serif text-xl text-luxury-700 mb-2">
-                        {product.name}
-                      </h2>
-                      <p className="text-luxury-500 mb-4 line-clamp-2">
-                        {product.description}
-                      </p>
-
-                      {product.materials && (
-                        <p className="text-sm text-luxury-500 mb-2">
-                          <span className="font-semibold">Materials:</span>{" "}
-                          {product.materials}
+                    <Link href={`/shop/${product.id}`} passHref>
+                      <div className="relative h-64">
+                        <Image
+                          src={product.images[0] || "/placeholder.svg"}
+                          alt={product.name}
+                          width={500}
+                          height={500}
+                          className="object-cover w-full h-full"
+                        />
+                        {addedToCart === product.id && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            className="absolute top-4 right-4 bg-gold text-white px-4 py-2 rounded-full"
+                          >
+                            Added to Cart!
+                          </motion.div>
+                        )}
+                      </div>
+                      <div className="p-6">
+                        <h2 className="font-serif text-xl text-luxury-700 mb-2">
+                          {product.name}
+                        </h2>
+                        <p className="text-luxury-500 mb-4 line-clamp-2">
+                          {product.description}
                         </p>
-                      )}
 
-                      {product.dimensions && (
-                        <p className="text-sm text-luxury-500 mb-4">
-                          <span className="font-semibold">Dimensions:</span>{" "}
-                          {product.dimensions}
-                        </p>
-                      )}
+                        {product.materials && (
+                          <p className="text-sm text-luxury-500 mb-2">
+                            <span className="font-semibold">Materials:</span>{" "}
+                            {product.materials}
+                          </p>
+                        )}
 
-                      <div className="flex justify-between items-center">
-                        <div>
-                          {product.salePrice ? (
-                            <>
-                              <span className="text-lg font-bold text-red-500">
-                                ${product.salePrice.toLocaleString()}
-                              </span>
-                              <span className="text-sm text-luxury-500 line-through ml-2">
+                        {product.dimensions && (
+                          <p className="text-sm text-luxury-500 mb-4">
+                            <span className="font-semibold">Dimensions:</span>{" "}
+                            {product.dimensions}
+                          </p>
+                        )}
+
+                        <div className="flex justify-between items-center">
+                          <div>
+                            {product.salePrice ? (
+                              <>
+                                <span className="text-lg font-bold text-red-500">
+                                  ${product.salePrice.toLocaleString()}
+                                </span>
+                                <span className="text-sm text-luxury-500 line-through ml-2">
+                                  ${product.price.toLocaleString()}
+                                </span>
+                              </>
+                            ) : (
+                              <span className="text-lg font-bold text-luxury-700">
                                 ${product.price.toLocaleString()}
                               </span>
-                            </>
-                          ) : (
-                            <span className="text-lg font-bold text-luxury-700">
-                              ${product.price.toLocaleString()}
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex space-x-2">
-                          <AnimatedAddToCartButton
-                            onClick={() => handleAddToCart(product)}
-                          />
+                            )}
+                          </div>
+                          <div className="flex space-x-2">
+                            <AnimatedAddToCartButton
+                              onClick={() => handleAddToCart(product)}
+                            />
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   </motion.div>
                 ))}
               </div>
@@ -291,7 +299,9 @@ export default function Shop() {
                 <div className="flex justify-center items-center space-x-4 mt-8">
                   <button
                     className="px-4 py-2 bg-luxury-300 text-luxury-700 rounded disabled:opacity-50"
-                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.max(prev - 1, 1))
+                    }
                     disabled={currentPage === 1}
                   >
                     Previous
@@ -378,8 +388,8 @@ export default function Shop() {
                     </p>
                     <button
                       onClick={() => {
-                        setIsCartOpen(false)
-                        setIsCheckoutOpen(true)
+                        setIsCartOpen(false);
+                        setIsCheckoutOpen(true);
                       }}
                       className="w-full mt-4 bg-gold text-luxury-700 py-3 rounded-full hover:bg-soft-gold transition-colors text-lg font-semibold"
                     >
@@ -398,5 +408,5 @@ export default function Shop() {
         onClose={() => setIsCheckoutOpen(false)}
       />
     </div>
-  )
+  );
 }
