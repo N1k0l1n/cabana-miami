@@ -1,0 +1,31 @@
+[
+  {
+    "id": "1",
+    "name": "Coastal Breeze Armchair",
+    "description": "Relax in style with our Coastal Breeze Armchair, featuring a sturdy teak frame and plush, weather-resistant cushions.",
+    "price": 1299,
+    "image": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/pini1._Natural_rattan_and_rattan_lampshades_on_the_ceiling_are__4ff710d1-0b6f-48de-a9f6-ed26b71ce46b-Q7FoV0woSgS4fqHxZcwr32CAzJRECr.png"
+  },
+  {
+    "id": "2",
+    "name": "Sunset Lounge Sofa",
+    "description": "The perfect centerpiece for your outdoor oasis, our Sunset Lounge Sofa combines comfort and elegance.",
+    "price": 2499,
+    "image": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/pini1._set_of_sofas_2_pieces_of_a_single_sofa_one_unit_2_seats__8688774c-15d2-4dee-9631-8c398a7890d6-40D4cChFGaVI10UduVNjXVKwcKxKno.png"
+  },
+  {
+    "id": "3",
+    "name": "Palm Oasis Coffee Table",
+    "description": "Complete your outdoor living space with our Palm Oasis Coffee Table, crafted from sustainable teak wood.",
+    "price": 899,
+    "image": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/pini1._A_teak_root_table_in_a_luxury_yacht_at_sea_many_details__f1d1f328-030a-4255-bd14-da1c5d94e1b9-jzAtOV9pGVoyzEHihhZy3ObPFCJf63.png"
+  },
+  {
+    "id": "4",
+    "name": "Seabreeze Dining Set",
+    "description": "Dine in luxury with our Seabreeze Dining Set, featuring a table and six chairs perfect for outdoor entertaining.",
+    "price": 3299,
+    "image": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/pini1._A_set_of_sofas_2_pieces_of_a_single_sofa_one_unit_2_seat_9f49b278-c7cf-44f7-b6f4-75f1c795701b-PKfMdLtyfn0RskCz8vR1COYo4Uvp3Y.png"
+  }
+]
+
