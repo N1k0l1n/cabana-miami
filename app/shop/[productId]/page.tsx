@@ -197,7 +197,7 @@ export default function ProductPage() {
                         setIsCartOpen(false);
                         setIsCheckoutOpen(true);
                       }}
-                      className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md transition-colors"
+                      className="w-full mt-4 bg-yellow-600 hover:bg-yellow-700 text-white py-3 rounded-md transition-colors"
                     >
                       Checkout
                     </button>
