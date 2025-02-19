@@ -1,108 +1,62 @@
 // app/shop/page.tsx
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import Image from "next/image"
-import { X, Search, Tag, SortAsc } from "lucide-react"
-import { LuxuryHeader } from "@/components/luxury-header"
-import { AnimatedAddToCartButton } from "@/components/animated-add-to-cart-button"
-import { CartIcon } from "@/components/cart-icon"
-import { QuickCheckoutPopup } from "@/components/quick-checkout-popup"
-import { useCart } from "../contexts/CartContext"
-import Link from 'next/link'; 
-
-interface Product {
-  id: string
-  name: string
-  description: string
-  price: number
-  salePrice: number | null
-  images: string[]
-  categories: string[]
-  stockQuantity: number
-  materials?: string
-  dimensions?: string
-}
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
+import { X, Search, Tag, SortAsc } from "lucide-react";
+import { LuxuryHeader } from "@/components/luxury-header";
+import { AnimatedAddToCartButton } from "@/components/animated-add-to-cart-button";
+import { CartIcon } from "@/components/cart-icon";
+import { QuickCheckoutPopup } from "@/components/quick-checkout-popup";
+import { useCart } from "../contexts/CartContext";
+import Link from "next/link";
+import useProductStore, { Product } from "../store/productStore";
 
 export default function Shop() {
-  // State for products, loading, and errors
-  const [products, setProducts] = useState<Product[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  // Other UI states
-  const [selectedCategory, setSelectedCategory] = useState("All")
-  const [sortBy, setSortBy] = useState("featured")
-  const [searchTerm, setSearchTerm] = useState("")
-  const [isCartOpen, setIsCartOpen] = useState(false)
-  const [addedToCart, setAddedToCart] = useState<string | null>(null)
-  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
-  const { cart, addToCart, total } = useCart()
-  const [menuHeight, setMenuHeight] = useState(0)
+  const { products, isLoading, error, fetchProducts } = useProductStore();
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [sortBy, setSortBy] = useState("featured");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [addedToCart, setAddedToCart] = useState<string | null>(null);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const { cart, addToCart, total } = useCart();
+  const [menuHeight, setMenuHeight] = useState(0);
 
   // Pagination state
-  const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 9
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
 
-  // Fetch products from the API when the component mounts
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch("/products1.json")
-        if (!response.ok) {
-          throw new Error("Failed to fetch products")
-        }
-        const data = await response.json()
-  
-        // Transform the data to match the Product interface
-        const transformedProducts = data.map((p: any) => ({
-          id: p.ID.toString(),
-          name: p.Name,
-          description: p.Description,
-          price: parseFloat(p["Regular price"]) || 0,
-          salePrice: p["Sale price"] ? parseFloat(p["Sale price"]) : null,
-          images: p.Images ? [p.Images] : ["/placeholder.svg"],
-          categories: p.Categories
-            ? p.Categories.split(",").map((cat: string) => cat.trim())
-            : [],
-          stockQuantity: parseInt(p.Stock) || 0,
-        }))
-  
-        setProducts(transformedProducts)
-      } catch (err: any) {
-        console.error("Error fetching products:", err)
-        setError(err.message)
-      } finally {
-        setIsLoading(false)
-      }
+    if (products.length === 0) {
+      fetchProducts();
     }
-    fetchProducts()
-  }, [])
+  }, [fetchProducts, products.length]);
 
   // Reset current page when filters change
   useEffect(() => {
-    setCurrentPage(1)
-  }, [selectedCategory, searchTerm, sortBy])
+    setCurrentPage(1);
+  }, [selectedCategory, searchTerm, sortBy]);
 
   // Calculate the header height for spacing
   useEffect(() => {
     const updateMenuHeight = () => {
-      const menu = document.getElementById("luxury-header")
+      const menu = document.getElementById("luxury-header");
       if (menu) {
-        setMenuHeight(menu.offsetHeight)
+        setMenuHeight(menu.offsetHeight);
       }
-    }
-    updateMenuHeight()
-    window.addEventListener("resize", updateMenuHeight)
-    return () => window.removeEventListener("resize", updateMenuHeight)
-  }, [])
+    };
+    updateMenuHeight();
+    window.addEventListener("resize", updateMenuHeight);
+    return () => window.removeEventListener("resize", updateMenuHeight);
+  }, []);
 
   // Derive the list of categories from fetched products
   const categories = [
     "All",
     ...new Set(products.flatMap((product) => product.categories)),
-  ]
+  ];
 
   // Filter and sort the products based on user input
   const filteredProducts = products
@@ -110,20 +64,20 @@ export default function Shop() {
       (product) =>
         (selectedCategory === "All" ||
           product.categories.includes(selectedCategory)) &&
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()),
+        product.name.toLowerCase().includes(searchTerm.toLowerCase())
     )
     .sort((a, b) => {
-      if (sortBy === "priceLowHigh") return a.price - b.price
-      if (sortBy === "priceHighLow") return b.price - a.price
-      return 0
-    })
+      if (sortBy === "priceLowHigh") return a.price - b.price;
+      if (sortBy === "priceHighLow") return b.price - a.price;
+      return 0;
+    });
 
   // Calculate pagination
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage)
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
   const paginatedProducts = filteredProducts.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
-  )
+  );
 
   const handleAddToCart = (product: Product) => {
     addToCart({
@@ -132,13 +86,13 @@ export default function Shop() {
       price: product.salePrice || product.price,
       quantity: 1,
       image: product.images[0],
-    })
-    setAddedToCart(product.id)
-    setTimeout(() => setAddedToCart(null), 2000)
-  }
+    });
+    setAddedToCart(product.id);
+    setTimeout(() => setAddedToCart(null), 2000);
+  };
 
   return (
-    <div className=" min-h-screen">
+    <div className="min-h-screen">
       <LuxuryHeader />
       <main style={{ paddingTop: `${menuHeight}px` }} className="pb-16">
         <div className="container mx-auto px-4">
@@ -167,9 +121,8 @@ export default function Shop() {
               />
             </div>
 
-            {/* Filters (Category and Sorting) */}
+            {/* Category & Sort Filters */}
             <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
-              {/* Category Filter */}
               <div className="relative w-full md:w-64">
                 <select
                   value={selectedCategory}
@@ -187,7 +140,7 @@ export default function Shop() {
                   size={20}
                 />
               </div>
-
+              
               {/* Sort By Filter */}
               <div className="relative w-full md:w-64">
                 <select
