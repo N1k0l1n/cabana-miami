@@ -1,8 +1,8 @@
 // /store/productStore.ts
-import {create} from 'zustand';
+import { create } from 'zustand';
 
 export interface Product {
-  id: string ;
+  id: string;
   name: string;
   description: string;
   price: number;
@@ -10,8 +10,8 @@ export interface Product {
   images: string[];
   categories: string[];
   stockQuantity: number;
-  materials?: string;
-  dimensions?: string;
+  materials?: string | null;
+  dimensions?: string | null;
 }
 
 interface ProductStore {
@@ -22,6 +22,12 @@ interface ProductStore {
   getProductById: (id: string) => Product | undefined;
 }
 
+const safeParse = (element: Element, tag: string, fallback: any) => {
+  const node = element.getElementsByTagName(tag)[0];
+  return node?.textContent || fallback;
+};
+
+// /store/productStore.ts
 const useProductStore = create<ProductStore>((set, get) => ({
   products: [],
   isLoading: false,
@@ -29,33 +35,35 @@ const useProductStore = create<ProductStore>((set, get) => ({
   fetchProducts: async () => {
     set({ isLoading: true, error: null });
     try {
-      // NOTE: When switching to a backend, update the URL and logic here.
-      const response = await fetch('/products1.json');
-      if (!response.ok) throw new Error('Failed to fetch products');
-      const data = await response.json();
-      const transformedProducts = data.map((p: any) => ({
-        id: p.ID.toString(),
-        name: p.Name,
-        description: p.Description,
-        price: parseFloat(p['Regular price']) || 0,
-        salePrice: p['Sale price'] ? parseFloat(p['Sale price']) : null,
-        images: p.Images ? [p.Images] : ['/placeholder.svg'],
-        categories: p.Categories
-          ? p.Categories.split(',').map((cat: string) => cat.trim())
-          : [],
-        stockQuantity: parseInt(p.Stock) || 0,
-        materials: p.Materials,
-        dimensions: p.Dimensions,
+      const response = await fetch('/api/quickbooks/products');
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      
+      // Parse as JSON instead of XML
+      const products = await response.json();
+      
+      // Transform the API response to match Product interface
+      const transformedProducts = products.map((item: any) => ({
+        id: item.id.toString(),
+        name: item.name,
+        description: item.description,
+        price: Number(item.price),
+        salePrice: item.salePrice ? Number(item.salePrice) : null,
+        images: item.images.length ? item.images : ['/placeholder.svg'],
+        categories: item.categories || [],
+        stockQuantity: Number(item.stockQuantity),
+        materials: item.materials || null,
+        dimensions: item.dimensions || null
       }));
+
       set({ products: transformedProducts });
     } catch (error: any) {
-      set({ error: error.message });
+      set({ error: error.message || 'Failed to fetch products' });
+      console.error('Fetch error:', error);
     } finally {
       set({ isLoading: false });
     }
   },
-  getProductById: (id: string) =>
-    get().products.find((p) => p.id === id),
+  getProductById: (id: string) => get().products.find((p) => p.id === id),
 }));
 
 export default useProductStore;

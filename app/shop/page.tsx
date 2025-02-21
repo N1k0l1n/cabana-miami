@@ -21,7 +21,7 @@ export default function Shop() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [addedToCart, setAddedToCart] = useState<string | null>(null);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  const { cart, addToCart, total } = useCart();
+  const { cart, addToCart, total } = useCart();  
   const [menuHeight, setMenuHeight] = useState(0);
 
   // Pagination state
@@ -34,43 +34,43 @@ export default function Shop() {
     }
   }, [fetchProducts, products.length]);
 
-  // Reset current page when filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedCategory, searchTerm, sortBy]);
+// Reset current page when filters change
+useEffect(() => {
+  setCurrentPage(1);
+}, [selectedCategory, searchTerm, sortBy]);
 
-  // Calculate the header height for spacing
-  useEffect(() => {
-    const updateMenuHeight = () => {
-      const menu = document.getElementById("luxury-header");
-      if (menu) {
-        setMenuHeight(menu.offsetHeight);
-      }
-    };
-    updateMenuHeight();
-    window.addEventListener("resize", updateMenuHeight);
-    return () => window.removeEventListener("resize", updateMenuHeight);
-  }, []);
+// Calculate the header height for spacing
+useEffect(() => {
+  const updateMenuHeight = () => {
+    const menu = document.getElementById("luxury-header");
+    if (menu) {
+      setMenuHeight(menu.offsetHeight);
+    }
+  };
+  updateMenuHeight();
+  window.addEventListener("resize", updateMenuHeight);
+  return () => window.removeEventListener("resize", updateMenuHeight);
+}, []);
 
-  // Derive the list of categories from fetched products
-  const categories = [
-    "All",
-    ...new Set(products.flatMap((product) => product.categories)),
-  ];
+// Derive the list of categories from fetched products
+const categories = [
+  "All",
+  ...new Set(products.flatMap((product) => product.categories)),
+];
 
-  // Filter and sort the products based on user input
-  const filteredProducts = products
-    .filter(
-      (product) =>
-        (selectedCategory === "All" ||
-          product.categories.includes(selectedCategory)) &&
-        product.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .sort((a, b) => {
-      if (sortBy === "priceLowHigh") return a.price - b.price;
-      if (sortBy === "priceHighLow") return b.price - a.price;
-      return 0;
-    });
+// Filter and sort the products based on user input
+const filteredProducts = products
+.filter(
+  (product) =>
+    (selectedCategory === "All" ||
+      product.categories.includes(selectedCategory)) &&
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+)
+.sort((a, b) => {
+  if (sortBy === "priceLowHigh") return a.price - b.price;
+  if (sortBy === "priceHighLow") return b.price - a.price;
+  return 0;
+});
 
   // Calculate pagination
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
@@ -92,124 +92,123 @@ export default function Shop() {
   };
 
   return (
-<div className="min-h-screen">
-  <LuxuryHeader />
-  <main  className="pb-16">
-    {/* Red Header Section */}
-    <div className="w-full bg-stone-300 py-16 mb-12">
-      <div className="container mx-auto px-4">
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="font-serif text-4xl mt-16 md:text-5xl text-white text-center"
-        >
-          Our Collection
-        </motion.h1>
-      </div>
-    </div>
-
-    <div className="container mx-auto px-4">
-      {/* Filters and Search */}
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
-        {/* Search Bar */}
-        <div className="relative w-full md:w-64">
-          <input
-            type="text"
-            placeholder="Search products..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-luxury-300 rounded-full focus:outline-none focus:ring-2 focus:ring-gold text-luxury-700"
-          />
-          <Search
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-luxury-500"
-            size={20}
-          />
-        </div>
-
-        {/* Category & Sort Filters */}
-        <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
-          <div className="relative w-full md:w-64">
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="appearance-none bg-white border border-luxury-300 text-luxury-700 py-2 pl-4 pr-8 rounded-full focus:outline-none focus:ring-2 focus:ring-gold w-full"
+    <div className="min-h-screen">
+      <LuxuryHeader />
+      <main className="pb-16">
+        {/* Red Header Section */}
+        <div className="w-full bg-stone-300 py-16 mb-12">
+          <div className="container mx-auto px-4">
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="font-serif text-4xl mt-16 md:text-5xl text-white text-center"
             >
-              {categories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
-            <Tag
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-luxury-500"
-              size={20}
-            />
-          </div>
-          
-          {/* Sort By Filter */}
-          <div className="relative w-full md:w-64">
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="appearance-none bg-white border border-luxury-300 text-luxury-700 py-2 pl-4 pr-8 rounded-full focus:outline-none focus:ring-2 focus:ring-gold w-full"
-            >
-              <option value="featured">Featured</option>
-              <option value="priceLowHigh">Price: Low to High</option>
-              <option value="priceHighLow">Price: High to Low</option>
-            </select>
-            <SortAsc
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-luxury-500"
-              size={20}
-            />
+              Our Collection
+            </motion.h1>
           </div>
         </div>
-      </div>
 
-      {/* Products Grid */}
-      {isLoading ? (
-        <div className="text-center">Loading products...</div>
-      ) : error ? (
-        <div className="text-center text-red-500">Error: {error}</div>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {paginatedProducts.map((product) => (
-              <motion.div
-                key={product.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow"
-              >
-                <Link href={`/shop/${product.id}`} passHref>
-                  <div className="relative h-64">
-                    <Image
-                      src={product.images[0] || "/placeholder.svg"}
-                      alt={product.name}
-                      width={500}
-                      height={500}
-                      className="object-cover w-full h-full"
-                    />
-                    {addedToCart === product.id && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        className="absolute top-4 right-4 bg-gold text-white px-4 py-2 rounded-full"
-                      >
-                        Added to Cart!
-                      </motion.div>
-                    )}
-                  </div>
-                  <div className="p-6">
-                    <h2 className="font-serif text-xl text-luxury-700 mb-2">
+        <div className="container mx-auto px-4">
+          {/* Filters and Search */}
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
+            {/* Search Bar */}
+            <div className="relative w-full md:w-64">
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-luxury-300 rounded-full focus:outline-none focus:ring-2 focus:ring-gold text-luxury-700"
+              />
+              <Search
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-luxury-500"
+                size={20}
+              />
+            </div>
+            {/* Category & Sort Filters */}
+            <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+              <div className="relative w-full md:w-64">
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="appearance-none bg-white border border-luxury-300 text-luxury-700 py-2 pl-4 pr-8 rounded-full focus:outline-none focus:ring-2 focus:ring-gold w-full"
+                >
+                  {categories.map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
+                <Tag
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-luxury-500"
+                  size={20}
+                />
+              </div>
+
+              {/* Sort By Filter */}
+              <div className="relative w-full md:w-64">
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="appearance-none bg-white border border-luxury-300 text-luxury-700 py-2 pl-4 pr-8 rounded-full focus:outline-none focus:ring-2 focus:ring-gold w-full"
+                >
+                  <option value="featured">Featured</option>
+                  <option value="priceLowHigh">Price: Low to High</option>
+                  <option value="priceHighLow">Price: High to Low</option>
+                </select>
+                <SortAsc
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-luxury-500"
+                  size={20}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Products Grid */}
+          {isLoading ? (
+            <div className="text-center">Loading products...</div>
+          ) : error ? (
+            <div className="text-center text-red-500">Error: {error}</div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {paginatedProducts.map((product) => (
+                  <motion.div
+                    key={product.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow"
+                  >
+                    <Link href={`/shop/${product.id}`} passHref>
+                      <div className="relative h-64">
+                        <Image
+                          src={product.images[0] || "/placeholder.svg"}
+                          alt={product.name}
+                          width={500}
+                          height={500}
+                          className="object-cover w-full h-full"
+                        />
+                        {addedToCart === product.id && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            className="absolute top-4 right-4 bg-gold text-white px-4 py-2 rounded-full"
+                            >
+                            Added to Cart!
+                          </motion.div>
+                        )}
+                      </div>
+                      <div className="p-6">
+                      <h2 className="font-serif text-xl text-luxury-700 mb-2">
                       {product.name}
-                    </h2>
-                    <p className="text-luxury-500 mb-4 line-clamp-2">
+                      </h2>
+                      <p className="text-luxury-500 mb-4 line-clamp-2">
                       {product.description}
-                    </p>
+                        </p>
 
-                    {product.materials && (
+                        {product.materials && (
                       <p className="text-sm text-luxury-500 mb-2">
                         <span className="font-semibold">Materials:</span>{" "}
                         {product.materials}
