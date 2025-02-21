@@ -42,7 +42,7 @@ export async function GET(req) {
         body: new URLSearchParams({
           grant_type: 'authorization_code',
           code: authCode,
-          redirect_uri: 'http://localhost:3000/api/quickbooks/callback',
+          redirect_uri: process.env.QUICKBOOKS_REDIRECT_URI_PROD || process.env.QUICKBOOKS_REDIRECT_URI_DEV,
         }),
       }
     );
