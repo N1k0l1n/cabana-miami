@@ -1,7 +1,7 @@
 // app/api/quickbooks/callback/route.js
 import { NextResponse } from 'next/server';
 import { tokenStore } from '../../../../lib/quickbooks';
-import { Buffer } from 'buffer'; // Ensure Buffer is available (polyfill if needed)
+import { Buffer } from 'buffer';
 
 export async function GET(req) {
   try {
@@ -10,10 +10,6 @@ export async function GET(req) {
     const realmId = url.searchParams.get('realmId');
     const error = url.searchParams.get('error');
 
-    // Log received parameters for debugging
-    console.log('Authorization code:', authCode);
-    console.log('Realm ID:', realmId);
-    console.log('Error:', error);
 
     if (error) {
       throw new Error(`QuickBooks error: ${error}`);
@@ -25,7 +21,11 @@ export async function GET(req) {
       );
     }
 
-    // Manually exchange auth code for tokens using the correct endpoint and POST body
+    // Compute the redirect URI based on the environment
+    const redirectUri = process.env.NODE_ENV === 'production'
+      ? process.env.QUICKBOOKS_REDIRECT_URI_PROD
+      : process.env.QUICKBOOKS_REDIRECT_URI_DEV;
+
     const base64Credentials = Buffer.from(
       `${process.env.QUICKBOOKS_CLIENT_ID}:${process.env.QUICKBOOKS_CLIENT_SECRET}`
     ).toString('base64');
@@ -42,7 +42,7 @@ export async function GET(req) {
         body: new URLSearchParams({
           grant_type: 'authorization_code',
           code: authCode,
-          redirect_uri: process.env.QUICKBOOKS_REDIRECT_URI_PROD || process.env.QUICKBOOKS_REDIRECT_URI_DEV,
+          redirect_uri: redirectUri,
         }),
       }
     );
@@ -57,7 +57,7 @@ export async function GET(req) {
 
     const tokenData = { ...tokenJson, realmId };
     console.log('Token data:', tokenData);
-
+    
     // Store tokens for later use
     await tokenStore.setToken(tokenData);
 
